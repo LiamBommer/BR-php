@@ -59,12 +59,12 @@ class User extends CI_Controller
 
         // database
         $row = $this->User_Model->login($data);
-        if(isset($row))
+        if($row != FALSE)
         {
             /* 密码正确 */
 
             $ajax_result['result'] = 'success';
-            $ajax_result['username'] = $row->username;
+            $ajax_result['row'] = $row;
             echo json_encode($ajax_result);
             exit;
         } else 
@@ -72,7 +72,7 @@ class User extends CI_Controller
             /* 密码错误 */
 
             $ajax_result['result'] = 'failure';
-            $ajax_result['error_msg'] = '密码错误';
+            $ajax_result['error_msg'] = '账户密码不匹配';
             echo json_encode($ajax_result);
             exit;
         }

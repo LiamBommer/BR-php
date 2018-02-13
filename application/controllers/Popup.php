@@ -17,7 +17,7 @@ class Popup extends CI_Controller {
         $query_result = array();
         // $result['content'] = urldecode($content);
 
-        $query = $this->Entry_Model->search_for(urldecode($content));
+        $query = $this->Entry_Model->search(urldecode($content));
 
         foreach($query->result() as $row)
         {

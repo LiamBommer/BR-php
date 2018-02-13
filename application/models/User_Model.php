@@ -35,7 +35,7 @@ class User_Model extends CI_Model
             // 用手机登录
             $option = 'phone';
         }
-        $sql = "SELECT username, ".$option.", password FROM user 
+        $sql = "SELECT id_user, username, ".$option.", password FROM user 
             WHERE ".$option."= ". $this->db->escape($data["$option"]) ."
             AND password = ". $this->db->escape($data['password']);
 
