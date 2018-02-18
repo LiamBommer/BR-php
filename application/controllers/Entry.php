@@ -14,8 +14,9 @@ class Entry extends CI_Controller {
      *  $content
      * 
      * @return
-     *  result['entries']  名字符合的词条
-     *  result['intes']    词条下面的解释
+     *  result['entry']  名字符合的词条
+     *  result['inte']    词条下面的解释
+     *  result['result'] = 'empty'  没有结果
      */
     public function search()
     {/*{{{*/
@@ -31,14 +32,17 @@ class Entry extends CI_Controller {
             $query = $this->Entry_Model->search($content);
             if($query != FALSE)
             {
-                foreach($query->result() as $row)
-                {
-                    $result[] = $row;
-                }
+                $result = $query;
+                echo json_encode($result);
+                exit;
+
+            } else
+            {
+                $result['result'] = 'empty';
+                echo json_encode($result);
+                exit;
             }
 
-            echo json_encode($result);
-            exit;
         }
 
     }/*}}}*/

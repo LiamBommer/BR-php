@@ -16,12 +16,39 @@ class Entry_Model extends CI_Model
 
         if(isset($content))
         {
+            $result = array();
 
-            $query = $this->db->select('*')
-                    ->like('name', $content)
-                    ->get('entry');
+            // 搜索符合条件的词条
+            $query_entry = $this->db->select('*')
+                        ->from('entry')
+                        ->like('entry.name', $content)
+                        ->get();
 
-            return $query;
+            $row = $query_entry->row();
+            if(!isset($row))
+            {
+                return FALSE;
+            }
+
+            // 搜索每个词条的所有释义
+            foreach($query_entry->result() as $row_entry)
+            {
+                // 词条存入数组
+                $result["entry"][] = $row_entry;
+
+                $query_inte = $this->db->select('*')
+                        ->from('interpretation')
+                        ->where('id_entry', $row_entry->id_entry)
+                        ->get();
+
+                // 将词条的释义遍历并存入数组
+                foreach($query_inte->result() as $row_inte)
+                {
+                    $result["inte"][] = $row_inte;
+                }
+            }
+
+            return $result;
 
         } else
         {
@@ -132,7 +159,7 @@ class Entry_Model extends CI_Model
             } else if(!isset($row_user))
             {
                 $result['result'] = 'failure';
-                $result['error_msg'] = '用户不存在';
+                $result['error_msg'] = '用户不存在，请尝试重新登陆';
                 return $result;
 
             } else
