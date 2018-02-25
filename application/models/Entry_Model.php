@@ -215,7 +215,7 @@ class Entry_Model extends CI_Model
         {
 
             // 查询词条及用户是否存在
-            $query_entry = $this->db->select('id_entry', 'name')
+            $query_entry = $this->db->select('id_entry')
                         ->where('id_entry', $data['entry_id'])
                         ->get('entry');
             $row_entry = $query_entry->row();
@@ -266,6 +266,235 @@ class Entry_Model extends CI_Model
             return $result;
         }
     }/*}}}*/
+
+
+    /*
+     * @param
+     *  $data:
+     *    entry_id
+     *    id_user
+     *    user_identity
+     * 
+     * @return
+     *  $result['result']
+     *      'success'
+     *      'failure'
+     *  $result['error_msg']
+     *
+     */
+    public function delete_entry($data)
+    {/*{{{*/
+
+        $result = array();
+
+        // 参数非空检查
+        if(isset($data['entry_id']) && isset($data['user_identity'])
+            && isset($data['id_user']))
+        {
+
+            // 查询词条及用户是否存在
+            $query_entry = $this->db->select('id_entry')
+                        ->where('id_entry', $data['entry_id'])
+                        ->get('entry');
+            $row_entry = $query_entry->row();
+            $query_user = $this->db->select('id_user')
+                        ->where('id_user', $data['id_user'])
+                        ->get('user');
+            $row_user = $query_user->row();
+
+            /*
+             * TODO:
+             *  检测用户身份权限
+             */
+
+            // 词条不存在
+            if(!isset($row_entry))
+            {
+                $result['result'] = 'failure';
+                $result['error_msg'] = '词条不存在';
+                return $result;
+
+            } else if(!isset($row_user))
+            {
+                $result['result'] = 'failure';
+                $result['error_msg'] = '用户不存在，请尝试重新登陆';
+                return $result;
+
+            } else
+            {
+                // 词条及用户均存在
+                // 确认删除词条
+                $this->db->where('id_entry', $data['entry_id'])
+                    ->delete('entry');
+
+                $result['result'] = 'success';
+                return $result;
+            }
+
+
+        } else
+        {
+            $result['result'] = 'failure';
+            $result['error_msg'] = '词条id，用户id及词条名需要非空，写入错误';
+            return $result;
+        }
+    }/*}}}*/
+
+
+    /*
+     * @param
+     *  $data:
+     *    inte_id
+     *    inte
+     *    resource
+     *    id_user
+     *    user_identity
+     * 
+     * @return
+     *  $result['result']
+     *      'success'
+     *      'failure'
+     *  $result['error_msg']
+     *
+     */
+    public function edit_inte($data)
+    {/*{{{*/
+
+        $result = array();
+
+        // 参数非空检查
+        if(isset($data['inte_id']) && isset($data['inte'])
+            && isset($data['id_user']) && isset($data['user_identity']))
+        {
+
+            // 查询释义及用户是否存在
+            $query_inte = $this->db->select('id_interpretation')
+                        ->where('id_interpretation', $data['inte_id'])
+                        ->get('interpretation');
+            $row_inte = $query_inte->row();
+            $query_user = $this->db->select('id_user')
+                        ->where('id_user', $data['id_user'])
+                        ->get('user');
+            $row_user = $query_user->row();
+
+            /*
+             * TODO:
+             *  检测用户身份权限
+             */
+
+            // 词条不存在
+            if(!isset($row_inte))
+            {
+                $result['result'] = 'failure';
+                $result['error_msg'] = '释义不存在';
+                return $result;
+
+            } else if(!isset($row_user))
+            {
+                $result['result'] = 'failure';
+                $result['error_msg'] = '用户不存在，请尝试重新登陆';
+                return $result;
+
+            } else
+            {
+                // 释义及用户均存在
+                // 修改释义
+                $edit_data = array(
+                    'id_user' => $data['id_user'],
+                    'interpretation' => $data['inte'],
+                    'resource' => $data['resource'],
+                    'datetime' => $data['datetime']
+                );
+                $this->db->set($edit_data)
+                    ->where('id_interpretation', $data['inte_id'])
+                    ->update('interpretation');
+
+                $result['result'] = 'success';
+                return $result;
+            }
+
+
+        } else
+        {
+            $result['result'] = 'failure';
+            $result['error_msg'] = '词条id，用户id及词条名需要非空，写入错误';
+            return $result;
+        }
+    }/*}}}*/
+
+
+    /*
+     * @param
+     *  $data:
+     *    inte_id
+     *    id_user
+     *    user_identity
+     * 
+     * @return
+     *  $result['result']
+     *      'success'
+     *      'failure'
+     *  $result['error_msg']
+     *
+     */
+    public function delete_inte($data)
+    {/*{{{*/
+
+        $result = array();
+
+        // 参数非空检查
+        if(isset($data['inte_id']) && isset($data['user_identity'])
+            && isset($data['id_user']))
+        {
+
+            // 查询释义及用户是否存在
+            $query_inte = $this->db->select('id_interpretation')
+                        ->where('id_interpretation', $data['inte_id'])
+                        ->get('interpretation');
+            $row_inte = $query_inte->row();
+            $query_user = $this->db->select('id_user')
+                        ->where('id_user', $data['id_user'])
+                        ->get('user');
+            $row_user = $query_user->row();
+
+            /*
+             * TODO:
+             *  检测用户身份权限
+             */
+
+            // 词条不存在
+            if(!isset($row_inte))
+            {
+                $result['result'] = 'failure';
+                $result['error_msg'] = '释义不存在';
+                return $result;
+
+            } else if(!isset($row_user))
+            {
+                $result['result'] = 'failure';
+                $result['error_msg'] = '用户不存在，请尝试重新登陆';
+                return $result;
+
+            } else
+            {
+                // 释义及用户均存在
+                // 确认删除释义
+                $this->db->where('id_interpretation', $data['inte_id'])
+                    ->delete('interpretation');
+
+                $result['result'] = 'success';
+                return $result;
+            }
+
+
+        } else
+        {
+            $result['result'] = 'failure';
+            $result['error_msg'] = '释义id，用户id需要非空，写入错误';
+            return $result;
+        }
+    }/*}}}*/
+
 
 
 }

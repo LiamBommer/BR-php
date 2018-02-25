@@ -171,6 +171,136 @@ class Entry extends CI_Controller {
     }/*}}}*/
 
 
+    /*
+     * @param
+     *  POST:
+     *    entry_id
+     *    id_user
+     *    user_identity
+     * 
+     * @return
+     *  $result:
+     *    result 'failure' || 'success'
+     *    error_msg
+     *
+     */
+    public function delete_entry()
+    {/*{{{*/
+
+        $result = array();
+        $data = array();
+
+        // 写入数据库信息填写
+        $data['entry_id'] = $this->input->post('entry_id');
+        $data['id_user'] = $this->input->post('id_user');
+        $data['user_identity'] = $this->input->post('user_identity');
+        $data['datetime'] = date('Y-m-d H:i:s', time());
+
+        $db_result = $this->Entry_Model->delete_entry($data);
+
+        if($db_result['result'] == 'failure')
+        {
+            $result['result'] = 'failure';
+            $result['error_msg'] = $db_result['error_msg'];
+        } else
+        {
+            $result['result'] = 'success';
+        }
+
+        echo json_encode($result);
+        exit;
+
+    }/*}}}*/
+
+
+    /*
+     * @param
+     *  POST:
+     *    inte_id
+     *    inte
+     *    resource
+     *    id_user
+     *    user_identity
+     * 
+     * @return
+     *  $result:
+     *    result 'failure' || 'success'
+     *    error_msg
+     *
+     */
+    public function edit_inte()
+    {/*{{{*/
+
+        $result = array();
+        $data = array();
+
+        // 写入数据库信息填写
+        $data['inte_id'] = $this->input->post('inte_id');
+        $data['inte'] = $this->input->post('inte');
+        $data['resource'] = $this->input->post('resource');
+        $data['id_user'] = $this->input->post('id_user');
+        $data['user_identity'] = $this->input->post('user_identity');
+        $data['datetime'] = date('Y-m-d H:i:s', time());
+
+        $db_result = $this->Entry_Model->edit_inte($data);
+
+        if($db_result['result'] == 'failure')
+        {
+            $result['result'] = 'failure';
+            $result['error_msg'] = $db_result['error_msg'];
+        } else
+        {
+            $result['result'] = 'success';
+        }
+
+        echo json_encode($result);
+        exit;
+
+    }/*}}}*/
+
+
+    
+    /*
+     * @param
+     *  POST:
+     *    inte_id
+     *    id_user
+     *    user_identity
+     * 
+     * @return
+     *  $result:
+     *    result 'failure' || 'success'
+     *    error_msg
+     *
+     */
+    public function delete_inte()
+    {/*{{{*/
+
+        $result = array();
+        $data = array();
+
+        // 写入数据库信息填写
+        $data['inte_id'] = $this->input->post('inte_id');
+        $data['id_user'] = $this->input->post('id_user');
+        $data['user_identity'] = $this->input->post('user_identity');
+        $data['datetime'] = date('Y-m-d H:i:s', time());
+
+        $db_result = $this->Entry_Model->delete_inte($data);
+
+        if($db_result['result'] == 'failure')
+        {
+            $result['result'] = 'failure';
+            $result['error_msg'] = $db_result['error_msg'];
+        } else
+        {
+            $result['result'] = 'success';
+        }
+
+        echo json_encode($result);
+        exit;
+
+    }/*}}}*/
+
 }
 
 ?>
