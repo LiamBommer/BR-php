@@ -35,11 +35,14 @@ class User_Model extends CI_Model
             // 用手机登录
             $option = 'phone';
         }
-        $sql = "SELECT id_user, username, ".$option.", password FROM user 
-            WHERE ".$option."= ". $this->db->escape($data["$option"]) ."
-            AND password = ". $this->db->escape($data['password']);
 
-        $query = $this->db->query($sql);
+        $query = $this->db->select('*')
+                ->from('user')
+                ->where("$option", $data["$option"])
+                ->where('password', $data['password'])
+                ->join('userInfo', 'userInfo.id_user=user.id_user')
+                ->get();
+
         $row = $query->row();
 
         if(isset($row))

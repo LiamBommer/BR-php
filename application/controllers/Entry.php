@@ -127,6 +127,49 @@ class Entry extends CI_Controller {
     }/*}}}*/
 
 
+    /*
+     * @param
+     *  POST:
+     *    entry_id
+     *    entry_name
+     *    id_user
+     *    user_identity
+     * 
+     * @return
+     *  $result:
+     *    result 'failure' || 'success'
+     *    error_msg
+     *
+     */
+    public function edit_entry()
+    {/*{{{*/
+
+        $result = array();
+        $data = array();
+
+        // 写入数据库信息填写
+        $data['entry_id'] = $this->input->post('entry_id');
+        $data['entry_name'] = $this->input->post('entry_name');
+        $data['id_user'] = $this->input->post('id_user');
+        $data['user_identity'] = $this->input->post('user_identity');
+        $data['datetime'] = date('Y-m-d H:i:s', time());
+
+        $db_result = $this->Entry_Model->edit_entry($data);
+
+        if($db_result['result'] == 'failure')
+        {
+            $result['result'] = 'failure';
+            $result['error_msg'] = $db_result['error_msg'];
+        } else
+        {
+            $result['result'] = 'success';
+        }
+
+        echo json_encode($result);
+        exit;
+
+    }/*}}}*/
+
 
 }
 
