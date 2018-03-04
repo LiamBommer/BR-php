@@ -11,7 +11,15 @@ class Entry_Model extends CI_Model
     }
 
 
-    public function search($content)
+    /*
+     * @param 
+     *  $content    要搜索的词条名
+     * 
+     * @return
+     *  $row || FALSE
+     *
+     */
+    public function search_entry($content)
     {/*{{{*/
 
         if(isset($content))
@@ -21,15 +29,26 @@ class Entry_Model extends CI_Model
             // 搜索符合条件的词条
             $query_entry = $this->db->select('*')
                         ->from('entry')
-                        ->like('entry.name', $content)
+                        ->like('name', $content)
                         ->get();
 
-            $row = $query_entry->row();
-            if(!isset($row))
+            $result = $query_entry->result();
+
+            if(!isset($result))
             {
                 return FALSE;
+
+            } else 
+            {
+                return $result;
+
             }
 
+
+
+            /*
+             * 现版本将词条与释义分开搜索
+             *
             // 搜索每个词条的所有释义
             foreach($query_entry->result() as $row_entry)
             {
@@ -49,12 +68,62 @@ class Entry_Model extends CI_Model
             }
 
             return $result;
+             */
 
         } else
         {
             return FALSE;
         }
     }/*}}}*/
+
+
+    /*
+     * @param 
+     *  $content    要搜索释义的词条id
+     * 
+     * @return
+     *  $row || FALSE
+     *
+     */
+    public function search_inte($content)
+    {/*{{{*/
+
+        if(isset($content))
+        {
+            $result = array();
+
+            // 搜索符合条件的释义
+            $query_inte = $this->db->select('*')
+                    ->from('interpretation')
+                    ->where('id_entry', $content)
+                    ->get();
+
+            $result['inte'] = $query_inte->result();
+
+            // 搜索每个词条的点赞数
+            $sql_like = "select id_interpretation, count(id_interpretation) as like_total".
+                        " from `like` group by id_interpretation";
+
+            $query_like = $this->db->query($sql_like);
+            $result['like'] = $query_like->result();
+
+
+            if(!isset($result))
+            {
+                return FALSE;
+
+            } else 
+            {
+                return $result;
+
+            }
+
+        } else
+        {
+            return FALSE;
+        }
+    }/*}}}*/
+
 
 
     /*
@@ -491,6 +560,46 @@ class Entry_Model extends CI_Model
         {
             $result['result'] = 'failure';
             $result['error_msg'] = '释义id，用户id需要非空，写入错误';
+            return $result;
+        }
+    }/*}}}*/
+
+
+    /*
+     * @param
+     *  $data['id_user']
+     *  $data['id_inte']
+     *  $data['datetime']
+     *
+     * @return
+     *  $result['result']
+     *      'success'
+     *      'failure'
+     *  $result['error_msg']
+     */
+    public function like($data)
+    {/*{{{*/
+
+        $result = array();
+
+        // 参数非空检查
+        if(isset($data['id_user']) && isset($data['id_inte']))
+        {
+
+            $insert_data = array(
+                'id_user' => $data['id_user'],
+                'id_interpretation' => $data['id_inte'],
+                'datetime' => $data['datetime']
+            );
+            $this->db->insert('like', $insert_data);
+
+            $result['result'] = 'success';
+            return $result;
+
+        } else
+        {
+            $result['result'] = 'failure';
+            $result['error_msg'] = '用户或词条id不存在，写入错误';
             return $result;
         }
     }/*}}}*/

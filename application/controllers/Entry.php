@@ -14,11 +14,15 @@ class Entry extends CI_Controller {
      *  $content
      * 
      * @return
-     *  result['entry']  名字符合的词条
-     *  result['inte']    词条下面的解释
-     *  result['result'] = 'empty'  没有结果
+     *  $result['result']  
+     *      empty           没有搜索结果时，返回此项empty
+     *
+     *  OR
+     *
+     *  $result             query返回的所有词条数组
+     *
      */
-    public function search()
+    public function search_entry()
     {/*{{{*/
 
         // ajax返回结果数组
@@ -29,7 +33,51 @@ class Entry extends CI_Controller {
         // 查询内容非空检查
         if(isset($content))
         {
-            $query = $this->Entry_Model->search($content);
+            $query = $this->Entry_Model->search_entry($content);
+            if($query != FALSE)
+            {
+                $result = $query;
+                echo json_encode($result);
+                exit;
+
+            } else
+            {
+                $result['result'] = 'empty';
+                echo json_encode($result);
+                exit;
+            }
+
+        }
+
+    }/*}}}*/
+
+
+    /*
+     * @param 
+     *  $entry_id
+     * 
+     * @return
+     *  $result['result']  
+     *      empty           没有搜索结果时，返回此项empty
+     *
+     *  OR
+     *
+     *  $result['inte']     query返回的所有词条数组
+     *  $result['like']     每个词条的like数
+     *
+     */
+    public function search_inte()
+    {/*{{{*/
+
+        // ajax返回结果数组
+        $result = array();
+
+        $content = $this->input->get('entry_id');
+
+        // 查询内容非空检查
+        if(isset($content))
+        {
+            $query = $this->Entry_Model->search_inte($content);
             if($query != FALSE)
             {
                 $result = $query;
@@ -300,6 +348,49 @@ class Entry extends CI_Controller {
         exit;
 
     }/*}}}*/
+
+
+    /*
+     * @param 
+     *  $POST
+     *    id_user
+     *    id_interpretation
+     * 
+     * @return
+     *  $result['result']  成功与否
+     *      = 'success'
+     *      = 'failure'
+     *
+     */
+    public function like()
+    {/*{{{*/
+
+        // ajax返回结果数组
+        $result = array();
+        $data = array();
+
+        // 写入数据库信息填写
+        $data['id_user'] = $this->input->post('id_user');
+        $data['id_inte'] = $this->input->post('id_inte');
+        $data['datetime'] = date('Y-m-d H:i:s', time());
+
+        $db_result = $this->Entry_Model->like($data);
+
+        if($db_result['result'] == 'failure')
+        {
+            $result['result'] = 'failure';
+            $result['error_msg'] = $db_result['error_msg'];
+        } else
+        {
+            $result['result'] = 'success';
+        }
+
+        echo json_encode($result);
+        exit;
+
+    }/*}}}*/
+
+
 
 }
 
