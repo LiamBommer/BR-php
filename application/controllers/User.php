@@ -155,10 +155,10 @@ class User extends CI_Controller
             exit;
         }else
         {
-            $data = $this->User_Model->getInfo($data);
+            $row = $this->User_Model->getInfo($data);
 
             $ajax_result['result'] = 'success';
-            $ajax_result['data'] = $data;
+            $ajax_result['row'] = $row;
             echo json_encode($ajax_result);
             exit;
         }

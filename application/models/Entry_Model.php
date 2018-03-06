@@ -44,32 +44,6 @@ class Entry_Model extends CI_Model
 
             }
 
-
-
-            /*
-             * 现版本将词条与释义分开搜索
-             *
-            // 搜索每个词条的所有释义
-            foreach($query_entry->result() as $row_entry)
-            {
-                // 词条存入数组
-                $result["entry"][] = $row_entry;
-
-                $query_inte = $this->db->select('*')
-                        ->from('interpretation')
-                        ->where('id_entry', $row_entry->id_entry)
-                        ->get();
-
-                // 将词条的释义遍历并存入数组
-                foreach($query_inte->result() as $row_inte)
-                {
-                    $result["inte"][] = $row_inte;
-                }
-            }
-
-            return $result;
-             */
-
         } else
         {
             return FALSE;
@@ -137,7 +111,7 @@ class Entry_Model extends CI_Model
      *      'failure'
      *  $result['error_msg']
      */
-    public function create($data)
+    public function new_entry($data)
     {/*{{{*/
 
         $result = array();

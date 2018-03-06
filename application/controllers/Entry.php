@@ -98,6 +98,50 @@ class Entry extends CI_Controller {
 
     /*
      * @param 
+     *  $POST
+     *    id_user
+     *    id_interpretation
+     * 
+     * @return
+     *  $result['result']  成功与否
+     *      = 'success'
+     *      = 'failure'
+     *
+     */
+    public function like()
+    {/*{{{*/
+
+        // ajax返回结果数组
+        $result = array();
+        $data = array();
+
+        // 写入数据库信息填写
+        $data['id_user'] = $this->input->post('id_user');
+        $data['id_inte'] = $this->input->post('id_inte');
+        $data['datetime'] = date('Y-m-d H:i:s', time());
+
+        // validate
+        // 非空
+
+        $db_result = $this->Entry_Model->like($data);
+
+        if($db_result['result'] == 'failure')
+        {
+            $result['result'] = 'failure';
+            $result['error_msg'] = $db_result['error_msg'];
+        } else
+        {
+            $result['result'] = 'success';
+        }
+
+        echo json_encode($result);
+        exit;
+
+    }/*}}}*/
+
+
+    /*
+     * @param 
      *  $entry_name
      * 
      * @return
@@ -106,7 +150,7 @@ class Entry extends CI_Controller {
      *      = 'failure'
      *
      */
-    public function create()
+    public function new_entry()
     {/*{{{*/
 
         // ajax返回结果数组
@@ -117,7 +161,10 @@ class Entry extends CI_Controller {
         $data['entry_name'] = $this->input->get('entry_name');
         $data['datetime'] = date('Y-m-d H:i:s', time());
 
-        $db_result = $this->Entry_Model->create($data);
+        // validate
+        // not null
+
+        $db_result = $this->Entry_Model->new_entry($data);
 
         if($db_result['result'] == 'failure')
         {
@@ -157,6 +204,9 @@ class Entry extends CI_Controller {
         $data['inte'] = $this->input->post('inte');
         $data['resource'] = $this->input->post('resource');
         $data['datetime'] = date('Y-m-d H:i:s', time());
+
+        // validate
+        // not null
 
         $db_result = $this->Entry_Model->insert_inte($data);
 
@@ -202,6 +252,9 @@ class Entry extends CI_Controller {
         $data['user_identity'] = $this->input->post('user_identity');
         $data['datetime'] = date('Y-m-d H:i:s', time());
 
+        // validate
+        // not null
+
         $db_result = $this->Entry_Model->edit_entry($data);
 
         if($db_result['result'] == 'failure')
@@ -243,6 +296,9 @@ class Entry extends CI_Controller {
         $data['id_user'] = $this->input->post('id_user');
         $data['user_identity'] = $this->input->post('user_identity');
         $data['datetime'] = date('Y-m-d H:i:s', time());
+
+        // validate
+        // not null
 
         $db_result = $this->Entry_Model->delete_entry($data);
 
@@ -348,48 +404,6 @@ class Entry extends CI_Controller {
         exit;
 
     }/*}}}*/
-
-
-    /*
-     * @param 
-     *  $POST
-     *    id_user
-     *    id_interpretation
-     * 
-     * @return
-     *  $result['result']  成功与否
-     *      = 'success'
-     *      = 'failure'
-     *
-     */
-    public function like()
-    {/*{{{*/
-
-        // ajax返回结果数组
-        $result = array();
-        $data = array();
-
-        // 写入数据库信息填写
-        $data['id_user'] = $this->input->post('id_user');
-        $data['id_inte'] = $this->input->post('id_inte');
-        $data['datetime'] = date('Y-m-d H:i:s', time());
-
-        $db_result = $this->Entry_Model->like($data);
-
-        if($db_result['result'] == 'failure')
-        {
-            $result['result'] = 'failure';
-            $result['error_msg'] = $db_result['error_msg'];
-        } else
-        {
-            $result['result'] = 'success';
-        }
-
-        echo json_encode($result);
-        exit;
-
-    }/*}}}*/
-
 
 
 }

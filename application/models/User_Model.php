@@ -142,6 +142,7 @@ class User_Model extends CI_Model
 
         $row_user = $query_user->row();
         $row_userInfo = $query_userInfo->row();
+
         $result = array();
 
         if(isset($row_user) Or isset($row_userInfo))
