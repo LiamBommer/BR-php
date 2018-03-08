@@ -121,9 +121,52 @@ class Entry extends CI_Controller {
         $data['datetime'] = date('Y-m-d H:i:s', time());
 
         // validate
-        // 非空
 
         $db_result = $this->Entry_Model->like($data);
+
+        if($db_result['result'] == 'failure')
+        {
+            $result['result'] = 'failure';
+            $result['error_msg'] = $db_result['error_msg'];
+        } else
+        {
+            $result['result'] = 'success';
+        }
+
+        echo json_encode($result);
+        exit;
+
+    }/*}}}*/
+
+
+    /*
+     * @param 
+     *  $POST
+     *    id_user
+     *    id_interpretation
+     * 
+     * @return
+     *  $result['result']  成功与否
+     *      = 'success'
+     *      = 'failure'
+     *
+     */
+    public function dislike()
+    {/*{{{*/
+
+        // ajax返回结果数组
+        $result = array();
+        $data = array();
+
+        // 写入数据库信息填写
+        $data['id_user'] = $this->input->post('id_user');
+        $data['id_inte'] = $this->input->post('id_inte');
+        $data['datetime'] = date('Y-m-d H:i:s', time());
+
+        // validate
+        // 非空
+
+        $db_result = $this->Entry_Model->dislike($data);
 
         if($db_result['result'] == 'failure')
         {
