@@ -75,7 +75,7 @@ class Entry_Model extends CI_Model
             $result['inte'] = $query_inte->result();
 
             // 搜索每个词条的点赞数
-            $sql_like = "select id_interpretation, count(id_interpretation) as like_total".
+            $sql_like = "select id_interpretation, sum(like_status)  as like_total".
                         " from `like` group by id_interpretation";
 
             $query_like = $this->db->query($sql_like);
@@ -95,6 +95,77 @@ class Entry_Model extends CI_Model
         } else
         {
             return FALSE;
+        }
+    }/*}}}*/
+
+
+    /*
+     * @param
+     *  $data['id_user']
+     *  $data['id_inte']
+     *  $data['datetime']
+     *
+     * @return
+     *  $result['result']
+     *      'success'
+     *      'failure'
+     *  $result['error_msg']
+     */
+    public function like($data)
+    {/*{{{*/
+
+        $result = array();
+
+        // 参数非空检查
+        if(isset($data['id_user']) && isset($data['id_inte']))
+        {
+            // 先查询是否有过点赞或点灭记录
+            $query = $this->db->select('like_status')
+                    ->from('like')
+                    ->where('id_user', $data['id_user'])
+                    ->where('id_interpretation', $data['id_inte'])
+                    ->get();
+
+            $row = $query->row();
+
+            if(isset($row))
+            {
+                $like_history = $row->like_status;
+
+                // 已经点过赞,提示
+                if($like_history == 1)
+                {
+                    $result['result'] = 'failure';
+                    $result['error_msg'] = '你已点过赞！';
+                    return $result;
+
+                // 之前点过灭,删除记录
+                }else if($like_history == -1)
+                {
+                    $this->db->delete('like', array('id_user'=>$data['id_user'], 'id_interpretation'=>$data['id_inte']));
+
+                // 未有过记录，进行插入点赞
+                } else
+                {
+                    $insert_data = array(
+                        'id_user' => $data['id_user'],
+                        'id_interpretation' => $data['id_inte'],
+                        'like_status' => 1,
+                        'datetime' => $data['datetime']
+                    );
+                    $this->db->insert('like', $insert_data);
+
+                    $result['result'] = 'success';
+                    return $result;
+                }
+            }
+
+
+        } else
+        {
+            $result['result'] = 'failure';
+            $result['error_msg'] = '用户或词条id不存在，写入错误';
+            return $result;
         }
     }/*}}}*/
 
@@ -539,44 +610,6 @@ class Entry_Model extends CI_Model
     }/*}}}*/
 
 
-    /*
-     * @param
-     *  $data['id_user']
-     *  $data['id_inte']
-     *  $data['datetime']
-     *
-     * @return
-     *  $result['result']
-     *      'success'
-     *      'failure'
-     *  $result['error_msg']
-     */
-    public function like($data)
-    {/*{{{*/
-
-        $result = array();
-
-        // 参数非空检查
-        if(isset($data['id_user']) && isset($data['id_inte']))
-        {
-
-            $insert_data = array(
-                'id_user' => $data['id_user'],
-                'id_interpretation' => $data['id_inte'],
-                'datetime' => $data['datetime']
-            );
-            $this->db->insert('like', $insert_data);
-
-            $result['result'] = 'success';
-            return $result;
-
-        } else
-        {
-            $result['result'] = 'failure';
-            $result['error_msg'] = '用户或词条id不存在，写入错误';
-            return $result;
-        }
-    }/*}}}*/
 
 
 
