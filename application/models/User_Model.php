@@ -60,6 +60,103 @@ class User_Model extends CI_Model
 
 
     /*
+     * 查询邮箱是否存在
+     *
+     * @param 
+     *  $email
+     *
+     * @return
+     *  true | false
+     */
+    public function is_email_existed($email)
+    {/*{{{*/
+
+        if(isset($email))
+        {
+            $query = $this->db->select('id_user')
+                    ->from('user')
+                    ->where('email', $email)
+                    ->get();
+            
+            $row = $query->row();
+
+            if(isset($row))
+            {
+                return true;
+            }else
+            {
+                return false;
+            }
+        }
+
+    }/*}}}*/
+
+    /*
+     * 查询手机是否存在
+     *
+     * @param 
+     *  $phone
+     *
+     * @return
+     *  true | false
+     */
+    public function is_phone_existed($phone)
+    {/*{{{*/
+
+        if(isset($phone))
+        {
+            $query = $this->db->select('id_user')
+                    ->from('user')
+                    ->where('phone', $phone)
+                    ->get();
+            
+            $row = $query->row();
+
+            if(isset($row))
+            {
+                return true;
+            }else
+            {
+                return false;
+            }
+        }
+
+    }/*}}}*/
+
+    /*
+     * 查询用户名是否存在
+     *
+     * @param 
+     *  $username
+     *
+     * @return
+     *  true | false
+     */
+    public function is_username_existed($username)
+    {/*{{{*/
+
+        if(isset($username))
+        {
+            $query = $this->db->select('id_user')
+                    ->from('user')
+                    ->where('username', $username)
+                    ->get();
+            
+            $row = $query->row();
+
+            if(isset($row))
+            {
+                return true;
+            }else
+            {
+                return false;
+            }
+        }
+
+    }/*}}}*/
+
+
+    /*
      * 注册用户
      *
      * @param $data
@@ -77,6 +174,8 @@ class User_Model extends CI_Model
     public function signup($data)
     {/*{{{*/
 
+        $result = array();
+
         // 插入user表
         $sql_to_user = "INSERT INTO user(email, phone, password, username)
             VALUES(".$this->db->escape($data['email']).", ".$this->db->escape($data['phone'])."
@@ -91,12 +190,15 @@ class User_Model extends CI_Model
 
         $query= $this->db->query($sql_for_id);
         $row = $query->row();
+
         if(isset($row))
         {
             $id_user = $row->id_user;
         }else
         {
-            return false;
+            $result['result'] = 'failure';
+            $result['error_msg'] = '';
+            return $result;
         }
 
 
@@ -108,7 +210,10 @@ class User_Model extends CI_Model
 
         $query= $this->db->query($sql_to_userInfo);
         
-        return true;
+        $result['result'] = 'success';
+        return $result;
+
+
     }/*}}}*/
 
 

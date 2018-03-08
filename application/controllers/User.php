@@ -94,11 +94,12 @@ class User extends CI_Controller
         // time format adapted to MySQL format
         $data['datetime'] = date('Y-m-d H:i:s', time());
 
-
-        // validate
+        /*
+         * validate
+         */
         if($data['username'] == null || $data['password'] == null
             || $data['gender'] == null)
-        {
+        {/*{{{*/
             // 用户名,密码, 与性别非空
             $ajax_result['result'] = 'failure';
             $ajax_result['error_msg'] = '用户名，密码或性别不能为空';
@@ -120,23 +121,90 @@ class User extends CI_Controller
             $ajax_result['error_msg'] = '性别出错，请重试';
             echo json_encode($ajax_result);
             exit;
-        }
+        }/*}}}*/
 
-
-        // database
-        if($this->User_Model->signup($data))
+        // 用户名密码正则验证
+        // 用户名，中文、字母、数字、下划线3-16个字符
+        if(preg_match('/[\x4E00-\x9FA5\w]{3,16}/', $data['username']))
+        {/*{{{*/
+            //大小写字母和数字的组合，没有特殊字符，6-16个字符
+            if(preg_match('/^[\w\d]{6,16}$/', $data['password']))
+            {
+            }else
+            {
+                $ajax_result['result'] = 'failure';
+                $ajax_result['error_msg'] = '密码格式不合格,大小写字母和数字的组合，没有特殊字符，6-16个字符';
+                echo json_encode($ajax_result);
+                exit;
+            }
+        }else
         {
-            // 注册成功
-            $ajax_result['result'] = 'success';
+            $ajax_result['result'] = 'failure';
+            $ajax_result['error_msg'] = '用户名格式不合格,中文、字母、数字、下划线3-16个字符';
+            echo json_encode($ajax_result);
+            exit;
+        }/*}}}*/
+
+        /*
+         * database
+         */
+
+        // 查询用户是否存在
+        $is_user_existed = false;
+        $option = '';
+        if(isset($data['email']))
+        {/*{{{*/
+            if($this->User_Model->is_email_existed($data['email']))
+            {
+                // 邮箱已存在
+                $is_user_existed = true;
+                $option = '邮箱';
+
+            }else if(isset($data['phone']))
+            {
+                if($this->User_Model->is_phone_existed($data['phone']))
+                {
+                    // 手机已存在
+                    $is_user_existed = true;
+                    $option = '手机号';
+
+                }else if(isset($data['username']))
+                {
+                    if($this->User_Model->is_username_existed($data['username']))
+                    {
+                        // 用户名已存在
+                        $is_user_existed = true;
+                        $option = '用户名';
+                    }
+                }
+            }
+        }/*}}}*/
+
+        if($is_user_existed == true)
+        {
+            $ajax_result['result'] = 'failure';
+            $ajax_result['error_msg'] = $option.'已存在';
             echo json_encode($ajax_result);
             exit;
         }else
         {
-            // 注册失败
-            $ajax_result['result'] = 'failure';
-            $ajax_result['error_msg'] = '注册失败，请重试';
-            echo json_encode($ajax_result);
-            exit;
+            // 进行用户注册
+            $query = $this->User_Model->signup($data);
+            if($query['result'] == 'success')
+            {
+                // 注册成功
+                $ajax_result['result'] = 'success';
+                echo json_encode($ajax_result);
+                exit;
+            }else
+            {
+                // 注册失败
+                $ajax_result['result'] = 'failure';
+                $ajax_result['error_msg'] = '注册失败，请重试\n'.$query['error_msg'];
+                echo json_encode($ajax_result);
+                exit;
+            }
+
         }
 
     }/*}}}*/
