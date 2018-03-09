@@ -243,6 +243,66 @@ class Entry_Model extends CI_Model
 
     /*
      * @param
+     *  $data['entry_name']
+     *  $data['entry_id']
+     *
+     * @return
+     *  $result['result']
+     *      'success'
+     *      'failure'
+     *  $result['error_msg']
+     */
+    public function new_entry_request($data)
+    {/*{{{*/
+
+        $result = array();
+
+        // 查询词条是否存在
+        $query = $this->db->select('is_open','request')
+                ->where('name', $data['entry_name'])
+                ->or_where('id_entry', $data['entry_id'])
+                ->get('entry');
+
+        $row = $query->row();
+
+        // 词条存在
+        if(isset($row))
+        {
+            // 差1次请求即可开放词条
+            if($row->request >= 9)
+            {
+                // 开放词条并增加请求
+                $this->db->set('is_open', 1)
+                    ->set('request', 'request+1', false)
+                    ->where('name', $data['entry_name'])
+                    ->or_where('id_entry', $data['entry_id'])
+                    ->update('entry');
+
+            }else
+            {
+                // 单纯增加请求
+                $this->db->set('request', 'request+1', false)
+                    ->where('name', $data['entry_name'])
+                    ->or_where('id_entry', $data['entry_id'])
+                    ->update('entry');
+
+                $result['result'] = 'success';
+                return $result;
+            }
+
+        } else
+        {
+            // 词题不存在
+            $result['result'] = 'failure';
+            $result['error_msg'] = '词条不存在';
+            return $result;
+        }
+
+    }/*}}}*/
+
+
+    /*
+     * @param
      *  $data['entry_name')
      *  $data['datetime']
      *
@@ -324,8 +384,8 @@ class Entry_Model extends CI_Model
             && isset($data['inte']))
         {
 
-            // 查询词条是否存在
-            $query_entry = $this->db->select('id_entry')
+            // 查询词条与用户是否存在
+            $query_entry = $this->db->select('is_open')
                     ->where('id_entry', $data['id_entry'])
                     ->get('entry');
             $row_entry = $query_entry->row();
@@ -333,21 +393,33 @@ class Entry_Model extends CI_Model
                     ->where('id_user', $data['id_user'])
                     ->get('user');
             $row_user = $query_user->row();
-            // 词条不存在
+
             if(!isset($row_entry))
             {
+                // 词条不存在
                 $result['result'] = 'failure';
                 $result['error_msg'] = '词条不存在';
                 return $result;
 
             } else if(!isset($row_user))
             {
+                // 用户不存在
                 $result['result'] = 'failure';
                 $result['error_msg'] = '用户不存在，请尝试重新登陆';
                 return $result;
 
-            } else
+            } else if($row_entry->is_open == 0)
             {
+                // 查询词条是否已开放
+                
+                    // 词条未开放，不允许插入释义
+                    $result['result'] = 'failure';
+                    $result['error_msg'] = '词条暂未开放，无法插入释义';
+                    return $result;
+
+            }else
+            {
+
                 // 词条及用户均存在
                 // 插入释义至词条
                 $insert_data = array(
@@ -362,7 +434,6 @@ class Entry_Model extends CI_Model
                 $result['result'] = 'success';
                 return $result;
             }
-
 
         } else
         {

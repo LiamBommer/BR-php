@@ -94,6 +94,7 @@ class User extends CI_Controller
         // time format adapted to MySQL format
         $data['datetime'] = date('Y-m-d H:i:s', time());
 
+
         /*
          * validate
          */
@@ -123,13 +124,16 @@ class User extends CI_Controller
             exit;
         }/*}}}*/
 
-        // 用户名密码正则验证
+
+        // 用户名, 密码, 邮箱，手机正则验证
         // 用户名，中文、字母、数字、下划线3-16个字符
-        if(preg_match('/[\x4E00-\x9FA5\w]{3,16}/', $data['username']))
+        if(preg_match('/^[A-Za-z0-9_\x{4e00}-\x{9fa5}]{3,16}$/u', $data['username']))
         {/*{{{*/
             //大小写字母和数字的组合，没有特殊字符，6-16个字符
             if(preg_match('/^[\w\d]{6,16}$/', $data['password']))
             {
+                // 邮箱正则检验
+                // 手机号正则检验
             }else
             {
                 $ajax_result['result'] = 'failure';
@@ -144,6 +148,7 @@ class User extends CI_Controller
             echo json_encode($ajax_result);
             exit;
         }/*}}}*/
+
 
         /*
          * database

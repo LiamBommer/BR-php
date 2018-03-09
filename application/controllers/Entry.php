@@ -185,6 +185,49 @@ class Entry extends CI_Controller {
 
     /*
      * @param 
+     *  $POST
+     *    entry_name
+     *    entry_id
+     * 
+     * @return
+     *  result['result']  成功与否
+     *      = 'success'
+     *      = 'failure'
+     *
+     */
+    public function new_entry_request()
+    {/*{{{*/
+
+        // ajax返回结果数组
+        $result = array();
+        $data = array();
+
+        // 写入数据库信息填写
+        $data['entry_name'] = $this->input->post('entry_name');
+        $data['entry_name'] = $this->input->post('entry_id');
+
+        // validate
+        // not null
+
+        $db_result = $this->Entry_Model->new_entry_request($data);
+
+        if($db_result['result'] == 'failure')
+        {
+            $result['result'] = 'failure';
+            $result['error_msg'] = $db_result['error_msg'];
+        } else
+        {
+            $result['result'] = 'success';
+        }
+
+        echo json_encode($result);
+        exit;
+
+    }/*}}}*/
+
+
+    /*
+     * @param 
      *  $entry_name
      * 
      * @return
