@@ -329,6 +329,35 @@ class User_Model extends CI_Model
     }/*}}}*/
 
 
+    public function search_user($id_user)
+    {
+        if(isset($id_user))
+        {
+            $query = $this->db->select('*')
+                    ->from('user')
+                    ->where('id_user', $id_user)
+                    ->get();
+
+            $row = $query->row();
+
+            if(!isset($row))
+            {
+                return FALSE;
+
+            } else 
+            {
+                return $row;
+
+            }
+
+        } else
+        {
+            return false;
+        }
+
+    }
+
+
 }
 
 ?>

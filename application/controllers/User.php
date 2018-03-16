@@ -287,6 +287,31 @@ class User extends CI_Controller
 
     }/*}}}*/
 
+    public function search_user()
+    {/*{{{*/
+
+        $result = array();
+        $data = array();
+
+        $id_user  = $this->input->get('id_user');
+
+        $query = $this->User_Model->search_user($id_user);
+
+        if($query != FALSE)
+        {
+            $result = $query;
+            echo json_encode($result);
+            exit;
+
+        } else
+        {
+            $result['result'] = 'empty';
+            echo json_encode($result);
+            exit;
+        }
+
+    }/*}}}*/
+
 }
 
 ?>

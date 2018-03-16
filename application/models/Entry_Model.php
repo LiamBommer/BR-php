@@ -82,7 +82,7 @@ class Entry_Model extends CI_Model
             $result['like'] = $query_like->result();
 
 
-            if(!isset($result))
+            if(!isset($result['inte']))
             {
                 return FALSE;
 
@@ -143,23 +143,21 @@ class Entry_Model extends CI_Model
                 }else if($like_history == -1)
                 {
                     $this->db->delete('like', array('id_user'=>$data['id_user'], 'id_interpretation'=>$data['id_inte']));
-
-                // 未有过记录，进行插入点赞
-                } else
-                {
-                    $insert_data = array(
-                        'id_user' => $data['id_user'],
-                        'id_interpretation' => $data['id_inte'],
-                        'like_status' => 1,
-                        'datetime' => $data['datetime']
-                    );
-                    $this->db->insert('like', $insert_data);
-
-                    $result['result'] = 'success';
-                    return $result;
                 }
-            }
+            } else
+            {
+                // 未有过记录，进行插入点赞
+                $insert_data = array(
+                    'id_user' => $data['id_user'],
+                    'id_interpretation' => $data['id_inte'],
+                    'like_status' => 1,
+                    'datetime' => $data['datetime']
+                );
+                $this->db->insert('like', $insert_data);
 
+                $result['result'] = 'success';
+                return $result;
+            }
 
         } else
         {
