@@ -333,7 +333,7 @@ class User_Model extends CI_Model
     {
         if(isset($id_user))
         {
-            $query = $this->db->select('*')
+            $query = $this->db->select('id_user, username')
                     ->from('user')
                     ->where('id_user', $id_user)
                     ->get();
