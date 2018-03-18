@@ -76,7 +76,7 @@ class Entry_Model extends CI_Model
 
             // 搜索每个词条的点赞数
             $sql_like = "select id_interpretation, sum(like_status)  as like_total".
-                        " from `like` group by id_interpretation";
+                        " from `like` group by id_interpretation order by like_total desc";
 
             $query_like = $this->db->query($sql_like);
             $result['like'] = $query_like->result();
@@ -213,20 +213,20 @@ class Entry_Model extends CI_Model
                     $result['error_msg'] = '你已点过灭！';
                     return $result;
 
+                } 
+            }else
+            {
                 // 未有过记录，进行插入点灭
-                } else
-                {
-                    $insert_data = array(
-                        'id_user' => $data['id_user'],
-                        'id_interpretation' => $data['id_inte'],
-                        'like_status' => -1,
-                        'datetime' => $data['datetime']
-                    );
-                    $this->db->insert('like', $insert_data);
+                $insert_data = array(
+                    'id_user' => $data['id_user'],
+                    'id_interpretation' => $data['id_inte'],
+                    'like_status' => -1,
+                    'datetime' => $data['datetime']
+                );
+                $this->db->insert('like', $insert_data);
 
-                    $result['result'] = 'success';
-                    return $result;
-                }
+                $result['result'] = 'success';
+                return $result;
             }
 
 
@@ -338,6 +338,7 @@ class Entry_Model extends CI_Model
                 // 插入词条
                 $insert_data = array(
                     'name' => $data['entry_name'],
+                    'is_open' => 1,
                     'datetime' => $data['datetime']
                 );
                 $this->db->insert('entry', $insert_data);
