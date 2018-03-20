@@ -67,9 +67,10 @@ class Entry_Model extends CI_Model
             $result = array();
 
             // 搜索符合条件的释义
-            $query_inte = $this->db->select('*')
+            $query_inte = $this->db->select('interpretation.*, user.username')
                     ->from('interpretation')
                     ->where('id_entry', $content)
+                    ->join('user', 'interpretation.id_user=user.id_user')
                     ->get();
 
             $result['inte'] = $query_inte->result();

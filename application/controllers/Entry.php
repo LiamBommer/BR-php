@@ -9,6 +9,24 @@ class Entry extends CI_Controller {
         $this->load->model('Entry_Model');
     }
 
+
+    /*
+     * 处理jsonp的返回结果
+     */
+    public function jsonp_encode($json)
+    {/*{{{*/
+        if(! empty($_GET['callback']))
+        {
+            return $_GET['callback'].'('.json_encode($result).')';
+
+        } else
+        {
+            return $json;
+        }
+    }/*}}}*/
+
+
+
     /*
      * @param 
      *  $content
@@ -37,13 +55,13 @@ class Entry extends CI_Controller {
             if($query != FALSE)
             {
                 $result = $query;
-                echo json_encode($result);
+                echo $this->jsonp_encode(json_encode($result));
                 exit;
 
             } else
             {
                 $result['result'] = 'empty';
-                echo json_encode($result);
+                echo $this->jsonp_encode(json_encode($result));
                 exit;
             }
 
