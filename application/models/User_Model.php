@@ -197,7 +197,7 @@ class User_Model extends CI_Model
         }else
         {
             $result['result'] = 'failure';
-            $result['error_msg'] = '';
+            $result['error_msg'] = '无法获取用户id';
             return $result;
         }
 

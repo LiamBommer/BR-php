@@ -26,6 +26,7 @@ class Entry_Model extends CI_Model
         {
             $result = array();
 
+
             // 搜索符合条件的词条
             $query_entry = $this->db->select('*')
                         ->from('entry')

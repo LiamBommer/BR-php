@@ -119,7 +119,7 @@ class User extends CI_Controller
         {
             // 性别内容
             $ajax_result['result'] = 'failure';
-            $ajax_result['error_msg'] = '性别出错，请重试';
+            $ajax_result['error_msg'] = '性别选择错误，请重试';
             echo json_encode($ajax_result);
             exit;
         }/*}}}*/
@@ -157,31 +157,38 @@ class User extends CI_Controller
         // 查询用户是否存在
         $is_user_existed = false;
         $option = '';
-        if(isset($data['email']))
-        {/*{{{*/
+        /*{{{*/
+        if(isset($data['email']) && $data['email'] != '')
+        {
             if($this->User_Model->is_email_existed($data['email']))
             {
                 // 邮箱已存在
                 $is_user_existed = true;
                 $option = '邮箱';
 
-            }else if(isset($data['phone']))
+            }
+        }
+
+        if(isset($data['phone']))
+        {
+            if($data['phone'] != '')
             {
                 if($this->User_Model->is_phone_existed($data['phone']))
                 {
                     // 手机已存在
                     $is_user_existed = true;
                     $option = '手机号';
-
-                }else if(isset($data['username']))
-                {
-                    if($this->User_Model->is_username_existed($data['username']))
-                    {
-                        // 用户名已存在
-                        $is_user_existed = true;
-                        $option = '用户名';
-                    }
                 }
+            }
+        }
+
+        if(isset($data['username']))
+        {
+            if($this->User_Model->is_username_existed($data['username']))
+            {
+                // 用户名已存在
+                $is_user_existed = true;
+                $option = '用户名';
             }
         }/*}}}*/
 
